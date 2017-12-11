@@ -1,18 +1,19 @@
-import React from 'react';
-import { ScaleUtils, AbstractSeries } from 'react-vis';
+import React from "react";
+import { ScaleUtils, AbstractSeries } from "react-vis";
 
 export default class Highlight extends AbstractSeries {
-
-  static displayName = 'HighlightOverlay';
+  static displayName = "HighlightOverlay";
   static defaultProps = {
-    allow: 'x',
-    color: 'rgb(77, 182, 172)',
+    allow: "x",
+    color: "rgb(77, 182, 172)",
     opacity: 0.3
   };
   state = {
     drawing: false,
     drawArea: { top: 0, right: 0, bottom: 0, left: 0 },
-    startLoc: 0
+    startLoc: 0,
+    x: 0,
+    y: 0
   };
 
   _getDrawArea(loc) {
@@ -63,8 +64,8 @@ export default class Highlight extends AbstractSeries {
 
     const { onBrushEnd } = this.props;
     const { drawArea } = this.state;
-    const xScale = ScaleUtils.getAttributeScale(this.props, 'x');
-    const yScale = ScaleUtils.getAttributeScale(this.props, 'y');
+    const xScale = ScaleUtils.getAttributeScale(this.props, "x");
+    const yScale = ScaleUtils.getAttributeScale(this.props, "y");
 
     // Clear the draw area
     this.setState({
@@ -93,29 +94,46 @@ export default class Highlight extends AbstractSeries {
   }
 
   onParentMouseMove(e) {
-    const { marginLeft, onBrush } = this.props;
+    const { marginLeft, onBrush, marginBottom } = this.props;
     const { drawing } = this.state;
-    const loc = e.nativeEvent.offsetX - marginLeft;
+
+    const loc_x = e.nativeEvent.offsetX - marginLeft;
+    const loc_y = e.nativeEvent.offsetY - marginBottom;
 
     if (drawing) {
-      const newDrawArea = this._getDrawArea(loc);
+      const newDrawArea = this._getDrawArea(loc_x);
       this.setState({ drawArea: newDrawArea });
+    }
 
-      if (onBrush) {
-        onBrush(e);
-      }
+    // Debug tool
+    const pos = {
+      x: loc_x,
+      y: loc_y
+    };
+
+    // Calll-back
+    if (onBrush) {
+      onBrush(pos);
     }
   }
 
   render() {
-    const { marginLeft, marginTop, innerWidth, innerHeight, color, opacity } = this.props;
+    const {
+      marginLeft,
+      marginTop,
+      innerWidth,
+      innerHeight,
+      color,
+      opacity
+    } = this.props;
     const { drawArea: { left, right, top, bottom } } = this.state;
 
     return (
-      <g transform={`translate(${marginLeft}, ${marginTop})`}
+      <g
+        transform={`translate(${marginLeft}, ${marginTop})`}
         className="highlight-container"
-        onMouseUp={(e) => this.stopDrawing()}
-        onMouseLeave={(e) => this.stopDrawing()}
+        onMouseUp={e => this.stopDrawing()}
+        onMouseLeave={e => this.stopDrawing()}
       >
         <rect
           className="mouse-target"
