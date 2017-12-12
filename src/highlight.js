@@ -42,17 +42,16 @@ export default class Highlight extends AbstractSeries {
     let out = drawArea;
 
     if(x_mode | xy_mode){
-      // X mode
+      // X mode or XY mode
       const {start, stop} = this._cropDimension(x, x_start, 0, innerWidth);
       out = {
         ...out,
         left: start,
         right: stop
       }
-
     } 
     if (y_mode | xy_mode){
-      // Y mode
+      // Y mode or XY mode
       const {start, stop} = this._cropDimension(y, y_start, 0, innerHeight);
       out = {
         ...out,
@@ -162,9 +161,7 @@ export default class Highlight extends AbstractSeries {
 
     if (onBrushEnd) {
       onBrushEnd(domainArea);
-    }
-
-    
+    }    
   }
 
   _getMousePosition(e){
@@ -184,21 +181,14 @@ export default class Highlight extends AbstractSeries {
   }
 
   onParentMouseMove(e) {
-    const {onBrush} = this.props;
     const {drawing} = this.state;
 
-    const pos = this._getMousePosition(e);
-
     if (drawing) {
+      const pos = this._getMousePosition(e);
       const newDrawArea = this._getDrawArea(pos);
       this.setState({ drawArea: newDrawArea });
     }
 
-
-    // Calll-back
-    if (onBrush) {
-      onBrush(pos);
-    }
   }
 
   render() {

@@ -73,12 +73,10 @@ export default class ZoomableChartExample extends React.Component {
         data: getRandomSeriesData(totalValues)
       }
     ],
-    x: 0,
-    y: 0
   }
 
   render() {
-    const { series, lastDrawLocation, x, y } = this.state;
+    const { series, lastDrawLocation} = this.state;
     return (
       <div className="example-with-click-me">
         <div className="legend">
@@ -89,8 +87,8 @@ export default class ZoomableChartExample extends React.Component {
 
         <div className="chart no-select">
           <XYPlot
-            animation
             xDomain={lastDrawLocation && [lastDrawLocation.left, lastDrawLocation.right]}
+            yDomain={lastDrawLocation && [lastDrawLocation.bottom, lastDrawLocation.top]}
             height={300}
             width={1000}>
 
@@ -110,14 +108,8 @@ export default class ZoomableChartExample extends React.Component {
                   { lastDrawLocation: area }
                 )
               }}
-              onBrush={(pos) => {
-                this.setState(
-                  { x: pos.x,
-                    y: pos.y }
-                )
-              }}
             />
-            <Borders style={{ all: { fill: '#0604' } }} />
+            <Borders style={{ all: { fill: '#fff' } }} />
             <XAxis />
             <YAxis />
           </XYPlot>
@@ -141,11 +133,6 @@ export default class ZoomableChartExample extends React.Component {
               <li><b>Left:</b> {lastDrawLocation.left}</li>
             </ul>
           ) : <span>N/A</span>}
-        </div>
-        <div>
-          <h4> Cursor position </h4>
-          x: {x} <br/>
-          y: {y}
         </div>
       </div>
     );
