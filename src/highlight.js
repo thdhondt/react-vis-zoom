@@ -37,47 +37,69 @@ export default class Highlight extends AbstractSeries {
   }
 
   onParentMouseDown(e) {
-    const { marginLeft, innerHeight, onBrushStart } = this.props;
+    const {innerHeight, innerWidth, onBrushStart} = this.props;
     const {x, y} = this._getMousePosition(e);
-    const location = e.nativeEvent.offsetX - marginLeft;
+    const y_rect = innerHeight - y;
 
     // Define zoom mode
     if (x < 0 & y >= 0){
-      // X mode
-      this.setState({
-        x_mode : true
-      });
-    } else if (x >= 0 & y < 0){
       // Y mode
       this.setState({
-        y_mode: true
+        y_mode : true,
+        drawing: true,
+        drawArea: {
+          top: y_rect,
+          right: innerWidth,
+          bottom: y_rect,
+          left: 0
+        },
+        startLoc: x
       });
+
+    } else if (x >= 0 & y < 0){
+      // X mode
+      this.setState({
+        x_mode: true,
+        drawing: true,
+        drawArea: {
+          top: 0,
+          right: x,
+          bottom: innerHeight,
+          left: x
+        },
+        startLoc: x
+      });
+
     } else if (x >= 0 & y >= 0){
       // XY mode
       this.setState({
-        xy_mode: true
+        xy_mode: true,
+        drawing: true,
+        drawArea: {
+          top: y_rect,
+          right: x,
+          bottom: y_rect,
+          left: x
+        },
+        startLoc: x
       });
     }
 
-    // TODO: Eventually support drawing as a full rectangle, if desired. Currently the code supports 'x' only
-    this.setState({
-      drawing: true,
-      drawArea: {
-        top: 0,
-        right: location,
-        bottom: innerHeight,
-        left: location
-      },
-      startLoc: location
-    });
-
+    // onBrushStart callback
     if (onBrushStart) {
       onBrushStart(e);
     }
+
   }
 
   stopDrawing() {
     // Quickly short-circuit if the user isn't drawing in our component
+    this.setState({
+      x_mode: false,
+      y_mode: false,
+      xy_mode: false
+    });
+
     if (!this.state.drawing) {
       return;
     }
@@ -112,12 +134,7 @@ export default class Highlight extends AbstractSeries {
       onBrushEnd(domainArea);
     }
 
-    // Reset mode
-    this.setState({
-      x_mode: false,
-      y_mode: false,
-      xy_mode: false
-    });
+    
   }
 
   _getMousePosition(e){
