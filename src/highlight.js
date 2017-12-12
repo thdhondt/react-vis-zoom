@@ -12,8 +12,9 @@ export default class Highlight extends AbstractSeries {
     drawing: false,
     drawArea: { top: 0, right: 0, bottom: 0, left: 0 },
     startLoc: 0,
-    x: 0,
-    y: 0
+    x_mode: false,
+    y_mode: false,
+    xy_mode: false
   };
 
   _getDrawArea(loc) {
@@ -37,7 +38,26 @@ export default class Highlight extends AbstractSeries {
 
   onParentMouseDown(e) {
     const { marginLeft, innerHeight, onBrushStart } = this.props;
+    const {x, y} = this._getMousePosition(e);
     const location = e.nativeEvent.offsetX - marginLeft;
+
+    // Define zoom mode
+    if (x < 0 & y >= 0){
+      // X mode
+      this.setState({
+        x_mode : true
+      });
+    } else if (x >= 0 & y < 0){
+      // Y mode
+      this.setState({
+        y_mode: true
+      });
+    } else if (x >= 0 & y >= 0){
+      // XY mode
+      this.setState({
+        xy_mode: true
+      });
+    }
 
     // TODO: Eventually support drawing as a full rectangle, if desired. Currently the code supports 'x' only
     this.setState({
@@ -91,24 +111,47 @@ export default class Highlight extends AbstractSeries {
     if (onBrushEnd) {
       onBrushEnd(domainArea);
     }
+
+    // Reset mode
+    this.setState({
+      x_mode: false,
+      y_mode: false,
+      xy_mode: false
+    });
+  }
+
+  _getMousePosition(e){
+
+    // Get graph size
+    const { marginLeft, marginTop, innerHeight } = this.props;
+
+    // Compute position in pixels relative to axis
+    const loc_x = e.nativeEvent.offsetX - marginLeft;
+    const loc_y = innerHeight + marginTop - e.nativeEvent.offsetY;
+
+    // Return (x, y) coordinates
+    return {
+      x: loc_x,
+      y: loc_y
+    }
+
   }
 
   onParentMouseMove(e) {
-    const { marginLeft, onBrush, marginBottom } = this.props;
+    const { onBrush } = this.props;
     const { drawing } = this.state;
 
-    const loc_x = e.nativeEvent.offsetX - marginLeft;
-    const loc_y = e.nativeEvent.offsetY - marginBottom;
+    const {x, y} = this._getMousePosition(e);
 
     if (drawing) {
-      const newDrawArea = this._getDrawArea(loc_x);
+      const newDrawArea = this._getDrawArea(x);
       this.setState({ drawArea: newDrawArea });
     }
 
     // Debug tool
     const pos = {
-      x: loc_x,
-      y: loc_y
+      x: x,
+      y: y
     };
 
     // Calll-back

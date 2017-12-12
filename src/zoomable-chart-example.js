@@ -117,7 +117,7 @@ export default class ZoomableChartExample extends React.Component {
                 )
               }}
             />
-            <Borders style={{ all: { fill: '#fff' } }} />
+            <Borders style={{ all: { fill: '#0604' } }} />
             <XAxis />
             <YAxis />
           </XYPlot>
