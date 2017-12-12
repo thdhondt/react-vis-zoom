@@ -8,32 +8,58 @@ export default class Highlight extends AbstractSeries {
     color: "rgb(77, 182, 172)",
     opacity: 0.3
   };
+
   state = {
     drawing: false,
     drawArea: { top: 0, right: 0, bottom: 0, left: 0 },
-    startLoc: 0,
+    x_start: 0,
+    y_start: 0,
     x_mode: false,
     y_mode: false,
     xy_mode: false
   };
 
-  _getDrawArea(loc) {
-    const { innerWidth } = this.props;
-    const { drawArea, startLoc } = this.state;
 
+  _cropDimension(loc, startLoc, minLoc, maxLoc){
     if (loc < startLoc) {
       return {
-        ...drawArea,
-        left: Math.max(loc, 0),
-        right: startLoc
+        start: Math.max(loc, minLoc),
+        stop: startLoc
       };
     }
 
     return {
-      ...drawArea,
-      right: Math.min(loc, innerWidth),
-      left: startLoc
+      stop: Math.min(loc, maxLoc),
+      start: startLoc
     };
+  }
+
+  _getDrawArea(loc) {
+    const {innerWidth, innerHeight} = this.props;
+    const {x_mode, y_mode, xy_mode} = this.state;
+    const {drawArea, x_start, y_start} = this.state;
+    const {x, y} = loc;
+
+    if(x_mode | xy_mode){
+      // X mode
+      const {start, stop} = this._cropDimension(x, x_start, 0, innerWidth);
+      return{
+        ...drawArea,
+        left: start,
+        right: stop
+      }
+
+    } 
+    if (y_mode | xy_mode){
+      // Y mode
+      const {start, stop} = this._cropDimension(y, y_start, 0, innerHeight);
+      console.log(stop);
+      return {
+        ...drawArea,
+        top: innerHeight - start,
+        bottom: innerHeight - stop
+      }
+    } 
   }
 
   onParentMouseDown(e) {
@@ -53,7 +79,7 @@ export default class Highlight extends AbstractSeries {
           bottom: y_rect,
           left: 0
         },
-        startLoc: x
+        y_start: y
       });
 
     } else if (x >= 0 & y < 0){
@@ -62,12 +88,12 @@ export default class Highlight extends AbstractSeries {
         x_mode: true,
         drawing: true,
         drawArea: {
-          top: 0,
+          top: innerHeight,
           right: x,
-          bottom: innerHeight,
+          bottom: 0,
           left: x
         },
-        startLoc: x
+        x_start: x
       });
 
     } else if (x >= 0 & y >= 0){
@@ -81,7 +107,8 @@ export default class Highlight extends AbstractSeries {
           bottom: y_rect,
           left: x
         },
-        startLoc: x
+        x_start: x,
+        y_starat: y
       });
     }
 
@@ -93,13 +120,14 @@ export default class Highlight extends AbstractSeries {
   }
 
   stopDrawing() {
-    // Quickly short-circuit if the user isn't drawing in our component
+    // Reset zoom state
     this.setState({
       x_mode: false,
       y_mode: false,
       xy_mode: false
     });
 
+    // Quickly short-circuit if the user isn't drawing in our component
     if (!this.state.drawing) {
       return;
     }
@@ -113,7 +141,8 @@ export default class Highlight extends AbstractSeries {
     this.setState({
       drawing: false,
       drawArea: { top: 0, right: 0, bottom: 0, left: 0 },
-      startLoc: 0
+      x_start: 0,
+      y_start: 0
     });
 
     // Invoke the callback with null if the selected area was < 5px
@@ -138,7 +167,6 @@ export default class Highlight extends AbstractSeries {
   }
 
   _getMousePosition(e){
-
     // Get graph size
     const { marginLeft, marginTop, innerHeight } = this.props;
 
@@ -155,21 +183,16 @@ export default class Highlight extends AbstractSeries {
   }
 
   onParentMouseMove(e) {
-    const { onBrush } = this.props;
-    const { drawing } = this.state;
+    const {onBrush} = this.props;
+    const {drawing} = this.state;
 
-    const {x, y} = this._getMousePosition(e);
+    const pos = this._getMousePosition(e);
 
     if (drawing) {
-      const newDrawArea = this._getDrawArea(x);
+      const newDrawArea = this._getDrawArea(pos);
       this.setState({ drawArea: newDrawArea });
     }
 
-    // Debug tool
-    const pos = {
-      x: x,
-      y: y
-    };
 
     // Calll-back
     if (onBrush) {
@@ -210,9 +233,9 @@ export default class Highlight extends AbstractSeries {
           opacity={opacity}
           fill={color}
           x={left}
-          y={top}
+          y={bottom}
           width={right - left}
-          height={bottom}
+          height={top - bottom}
         />
       </g>
     );
