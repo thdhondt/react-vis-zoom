@@ -19,6 +19,7 @@
 // THE SOFTWARE.
 
 import React from 'react';
+import './index.css'
 
 import {
   XAxis,
@@ -76,7 +77,7 @@ export default class ZoomableChartExample extends React.Component {
   }
 
   render() {
-    const { series, lastDrawLocation} = this.state;
+    const { series, lastDrawLocation } = this.state;
     return (
       <div className="example-with-click-me">
         <div className="legend">
@@ -110,29 +111,9 @@ export default class ZoomableChartExample extends React.Component {
               }}
             />
             <Borders style={{ all: { fill: '#fff' } }} />
-            <XAxis />
-            <YAxis />
+            <XAxis title="X Axis" tickFormat={(v) => (<tspan className="unselectable"> {v} </tspan>)} />
+            <YAxis title='Value [-]' tickFormat={(v) => (<tspan className="unselectable"> {v} </tspan>)} />
           </XYPlot>
-        </div>
-
-        <button className="showcase-button" onClick={() => {
-          this.setState({ lastDrawLocation: null });
-        }}>
-          Reset Zoom
-        </button>
-
-        <div>
-          <h4>
-            <b>Last Draw Area</b>
-          </h4>
-          {lastDrawLocation ? (
-            <ul style={{ listStyle: 'none' }}>
-              <li><b>Top:</b> {lastDrawLocation.top}</li>
-              <li><b>Right:</b> {lastDrawLocation.right}</li>
-              <li><b>Bottom:</b> {lastDrawLocation.bottom}</li>
-              <li><b>Left:</b> {lastDrawLocation.left}</li>
-            </ul>
-          ) : <span>N/A</span>}
         </div>
       </div>
     );

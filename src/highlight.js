@@ -20,7 +20,7 @@ export default class Highlight extends AbstractSeries {
   };
 
 
-  _cropDimension(loc, startLoc, minLoc, maxLoc){
+  _cropDimension(loc, startLoc, minLoc, maxLoc) {
     if (loc < startLoc) {
       return {
         start: Math.max(loc, minLoc),
@@ -35,43 +35,43 @@ export default class Highlight extends AbstractSeries {
   }
 
   _getDrawArea(loc) {
-    const {innerWidth, innerHeight} = this.props;
-    const {x_mode, y_mode, xy_mode} = this.state;
-    const {drawArea, x_start, y_start} = this.state;
-    const {x, y} = loc;
+    const { innerWidth, innerHeight } = this.props;
+    const { x_mode, y_mode, xy_mode } = this.state;
+    const { drawArea, x_start, y_start } = this.state;
+    const { x, y } = loc;
     let out = drawArea;
 
-    if(x_mode | xy_mode){
+    if (x_mode | xy_mode) {
       // X mode or XY mode
-      const {start, stop} = this._cropDimension(x, x_start, 0, innerWidth);
+      const { start, stop } = this._cropDimension(x, x_start, 0, innerWidth);
       out = {
         ...out,
         left: start,
         right: stop
       }
-    } 
-    if (y_mode | xy_mode){
+    }
+    if (y_mode | xy_mode) {
       // Y mode or XY mode
-      const {start, stop} = this._cropDimension(y, y_start, 0, innerHeight);
+      const { start, stop } = this._cropDimension(y, y_start, 0, innerHeight);
       out = {
         ...out,
         top: innerHeight - start,
         bottom: innerHeight - stop
       }
-    } 
+    }
     return out
   }
 
   onParentMouseDown(e) {
-    const {innerHeight, innerWidth, onBrushStart} = this.props;
-    const {x, y} = this._getMousePosition(e);
+    const { innerHeight, innerWidth, onBrushStart } = this.props;
+    const { x, y } = this._getMousePosition(e);
     const y_rect = innerHeight - y;
 
     // Define zoom mode
-    if (x < 0 & y >= 0){
+    if (x < 0 & y >= 0) {
       // Y mode
       this.setState({
-        y_mode : true,
+        y_mode: true,
         drawing: true,
         drawArea: {
           top: y_rect,
@@ -82,7 +82,7 @@ export default class Highlight extends AbstractSeries {
         y_start: y
       });
 
-    } else if (x >= 0 & y < 0){
+    } else if (x >= 0 & y < 0) {
       // X mode
       this.setState({
         x_mode: true,
@@ -96,7 +96,7 @@ export default class Highlight extends AbstractSeries {
         x_start: x
       });
 
-    } else if (x >= 0 & y >= 0){
+    } else if (x >= 0 & y >= 0) {
       // XY mode
       this.setState({
         xy_mode: true,
@@ -161,10 +161,10 @@ export default class Highlight extends AbstractSeries {
 
     if (onBrushEnd) {
       onBrushEnd(domainArea);
-    }    
+    }
   }
 
-  _getMousePosition(e){
+  _getMousePosition(e) {
     // Get graph size
     const { marginLeft, marginTop, innerHeight } = this.props;
 
@@ -181,7 +181,7 @@ export default class Highlight extends AbstractSeries {
   }
 
   onParentMouseMove(e) {
-    const {drawing} = this.state;
+    const { drawing } = this.state;
 
     if (drawing) {
       const pos = this._getMousePosition(e);
