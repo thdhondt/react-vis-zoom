@@ -159,9 +159,9 @@ export default class Highlight extends AbstractSeries {
 
     // Compute the corresponding domain drawn
     const domainArea = {
-      top: yScale.invert(drawArea.top),
+      bottom: yScale.invert(drawArea.top),
       right: xScale.invert(drawArea.right),
-      bottom: yScale.invert(drawArea.bottom),
+      top: yScale.invert(drawArea.bottom),
       left: xScale.invert(drawArea.left)
     };
 
