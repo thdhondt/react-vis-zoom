@@ -87,7 +87,7 @@ export default class ZoomableChartExample extends React.Component {
             items={series} />
         </div>
 
-        <div className="chart no-select">
+        <div className="chart no-select" onDragStart={function (e) { e.preventDefault(); }}>
           <XYPlot
             xDomain={lastDrawLocation && [lastDrawLocation.left, lastDrawLocation.right]}
             yDomain={lastDrawLocation && [lastDrawLocation.bottom, lastDrawLocation.top]}
