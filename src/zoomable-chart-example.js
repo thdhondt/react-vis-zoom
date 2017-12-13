@@ -26,10 +26,10 @@ import {
   YAxis,
   HorizontalGridLines,
   VerticalGridLines,
-  XYPlot,
   LineSeries,
   DiscreteColorLegend,
-  Borders
+  Borders,
+  XYPlot
 } from 'react-vis';
 import Highlight from './highlight';
 
@@ -79,6 +79,7 @@ export default class ZoomableChartExample extends React.Component {
   render() {
     const { series, lastDrawLocation } = this.state;
     return (
+      
       <div className="example-with-click-me">
         <div className="legend">
           <DiscreteColorLegend

@@ -19,6 +19,12 @@ export default class Highlight extends AbstractSeries {
     xy_mode: false
   };
 
+  constructor(props){
+    super(props);
+    document.addEventListener("mouseup", function (e) {
+      this.stopDrawing()
+    }.bind(this));
+  }
 
   _cropDimension(loc, startLoc, minLoc, maxLoc) {
     if (loc < startLoc) {
@@ -116,7 +122,7 @@ export default class Highlight extends AbstractSeries {
     if (onBrushStart) {
       onBrushStart(e);
     }
-
+    
   }
 
   stopDrawing() {
@@ -126,7 +132,7 @@ export default class Highlight extends AbstractSeries {
       y_mode: false,
       xy_mode: false
     });
-
+   
     // Quickly short-circuit if the user isn't drawing in our component
     if (!this.state.drawing) {
       return;
@@ -201,14 +207,10 @@ export default class Highlight extends AbstractSeries {
       opacity
     } = this.props;
     const { drawArea: { left, right, top, bottom } } = this.state;
-
     return (
       <g
         transform={`translate(${marginLeft}, ${marginTop})`}
-        className="highlight-container"
-        onMouseUp={e => this.stopDrawing()}
-        onMouseLeave={e => this.stopDrawing()}
-      >
+        className="highlight-container">
         <rect
           className="mouse-target"
           fill="black"
