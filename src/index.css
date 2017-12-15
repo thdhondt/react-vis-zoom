@@ -5,3 +5,13 @@
    -ms-user-select: none;
    user-select: none;
 }
+
+.legend{
+  float: right;
+}
+
+.axis-labels{
+  font-family: 'Open Sans', sans-serif;
+  font-size: 8pt;
+  color: gray;
+}

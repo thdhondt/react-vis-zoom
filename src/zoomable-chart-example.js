@@ -32,6 +32,7 @@ import {
   XYPlot
 } from 'react-vis';
 import Highlight from './highlight';
+import CustomAxisLabel from './custom-axis-label';
 
 const totalValues = 100;
 
@@ -92,7 +93,8 @@ export default class ZoomableChartExample extends React.Component {
             xDomain={lastDrawLocation && [lastDrawLocation.left, lastDrawLocation.right]}
             yDomain={lastDrawLocation && [lastDrawLocation.bottom, lastDrawLocation.top]}
             height={300}
-            width={1000}>
+            width={600}
+            margin={{ left: 45, right: 20, top: 10, bottom: 45 }}>
 
             <HorizontalGridLines />
             <VerticalGridLines />
@@ -112,8 +114,10 @@ export default class ZoomableChartExample extends React.Component {
               }}
             />
             <Borders style={{ all: { fill: '#fff' } }} />
-            <XAxis title="X Axis" tickFormat={(v) => (<tspan className="unselectable"> {v} </tspan>)} />
-            <YAxis title='Value [-]' tickFormat={(v) => (<tspan className="unselectable"> {v} </tspan>)} />
+            <XAxis tickFormat={(v) => (<tspan className="unselectable"> {v} </tspan>)} />
+            <YAxis tickFormat={(v) => (<tspan className="unselectable"> {v} </tspan>)} />
+            <CustomAxisLabel title={'Time [s]'} xAxis/>
+            <CustomAxisLabel title={'Value [-]'} />          
           </XYPlot>
         </div>
       </div>
